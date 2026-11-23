@@ -1,0 +1,13 @@
+.neon/
+node_modules/
+.env
+.env.local
+target/
+uploads/
+*.log
+.idea/
+.vscode/
+.neon
+*.lnk
+neon.ts
+notes.txt

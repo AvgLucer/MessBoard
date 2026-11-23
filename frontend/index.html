@@ -1,0 +1,1700 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messboard</title>
+
+<style>
+:root {
+    --bg: #ffffff;
+    --panel: #f8f8f8;
+    --border: #e7e7e7;
+    --text: #242424;
+    --muted: #858585;
+    --green: #16865b;
+    --rail: #f5f5f5;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+button, input, textarea {
+    font: inherit;
+}
+
+/* LEFT NAVIGATION RAIL */
+
+.rail {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 24px;
+    background: var(--rail);
+    border-right: 1px solid var(--border);
+    z-index: 100;
+}
+
+/* FLOATING PLUS BUTTON */
+
+
+/* FLOATING PLUS BUTTON */
+
+.plus-button {
+    position: fixed;
+    z-index: 102;
+    left: 7px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 55px;
+    height: 55px;
+
+    border: 1px solid #dedede;
+    border-radius: 17px;
+
+    background: linear-gradient(
+        145deg,
+        #ffffff,
+        #f7f7f7
+    );
+
+    color: #292929;
+    font-size: 30px;
+    font-weight: 300;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+        0 3px 5px rgba(0,0,0,.035),
+        5px 5px 0 #ededed,
+        7px 8px 17px rgba(0,0,0,.09);
+
+    transition:
+        left .3s ease,
+        box-shadow .3s ease,
+        background .25s ease,
+        transform .3s cubic-bezier(.2,.8,.2,1);
+}
+
+.plus-button:hover {
+    left: 10px;
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.04),
+        5px 5px 0 #e9e9e9,
+        8px 10px 22px rgba(0,0,0,.12);
+
+    transform: translateY(-50%) scale(1.04);
+}
+
+.plus-button.open {
+    transform: translateY(-50%) rotate(45deg);
+
+    background: #f2f5f2;
+
+    box-shadow:
+        0 3px 5px rgba(0,0,0,.04),
+        4px 4px 0 #e8e8e8,
+        7px 8px 17px rgba(0,0,0,.08);
+}
+
+
+
+
+/* POP-OUT MENU */
+
+.menu-panel {
+    position: fixed;
+    z-index: 101;
+    left: 69px;
+    top: 50%;
+    width: 205px;
+    padding: 9px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.10);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-12px, -50%) scale(.96);
+    transform-origin: left center;
+    transition: opacity .22s ease, transform .22s ease,
+                visibility .22s;
+}
+
+.menu-panel.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(0, -50%) scale(1);
+}
+
+.menu-label {
+    padding: 10px 12px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+.menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: none;
+    background: transparent;
+    padding: 12px;
+    border-radius: 9px;
+    font-size: 13px;
+    color: #444;
+    text-align: left;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+.menu-item:hover {
+    background: #f3f3f3;
+}
+
+.menu-item .symbol {
+    width: 20px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.menu-item.active {
+    background: #f0f5f1;
+    color: var(--green);
+}
+
+/* MAIN WEBSITE */
+
+.main {
+    margin-left: 24px;
+    min-height: 100vh;
+}
+
+.topbar {
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 7%;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,.94);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+}
+
+.brand {
+    font-size: 20px;
+    font-weight: 750;
+    letter-spacing: -1px;
+}
+
+.brand span {
+    color: var(--green);
+}
+
+.top-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1.2px;
+}
+
+.content {
+    max-width: 760px;
+    margin: 65px auto;
+    padding: 0 25px;
+}
+
+/* HERO SECTION */
+
+.hero {
+    margin-bottom: 43px;
+    animation: fadeUp .55s ease both;
+}
+
+.eyebrow {
+    color: var(--green);
+    font-size: 10px;
+    letter-spacing: 1.7px;
+    font-weight: 700;
+    margin-bottom: 13px;
+}
+
+.hero h1 {
+    font-size: clamp(34px, 5vw, 49px);
+    line-height: 1.13;
+    letter-spacing: -2px;
+    font-weight: 750;
+}
+
+.hero p {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* FEED */
+
+.feed-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 17px;
+}
+
+.feed-heading h2 {
+    font-size: 17px;
+    font-weight: 650;
+}
+
+.feed-heading span {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.post {
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 18px;
+    background: white;
+    animation: fadeUp .4s ease both;
+    transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.post:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 25px rgba(0,0,0,.045);
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 13px;
+}
+
+.mess {
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.date {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.food-title {
+    font-size: 19px;
+    font-weight: 650;
+    margin-bottom: 13px;
+}
+
+.food-image {
+    width: 100%;
+    max-height: 390px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 13px;
+    background: var(--panel);
+}
+
+.stars {
+    color: #d9a12d;
+    font-size: 15px;
+    margin-bottom: 9px;
+}
+
+.comment {
+    color: #626262;
+    font-size: 13px;
+    line-height: 1.75;
+    margin-bottom: 16px;
+    overflow-wrap: anywhere;
+}
+
+.actions {
+    display: flex;
+    gap: 9px;
+    border-top: 1px solid var(--border);
+    padding-top: 13px;
+}
+
+.vote {
+    border: 1px solid transparent;
+    background: var(--panel);
+    color: #555;
+    border-radius: 8px;
+    padding: 8px 13px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.vote:hover {
+    border-color: #ddd;
+    transform: translateY(-1px);
+}
+
+.vote.selected {
+    background: #e9f5ee;
+    color: var(--green);
+}
+
+.vote.down-selected {
+    background: #fff0f0;
+    color: #c34c4c;
+}
+
+/* PAGE SECTIONS */
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+    animation: fadeUp .3s ease both;
+}
+
+.page-title {
+    font-size: 32px;
+    letter-spacing: -1.2px;
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 27px;
+}
+
+/* CREATE POST FORM */
+
+.create-card {
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 24px;
+}
+
+.field {
+    margin-bottom: 19px;
+}
+
+.field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 650;
+    margin-bottom: 8px;
+}
+
+.field input:not([type="file"]),
+.field textarea,
+.search {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 12px 13px;
+    font-size: 13px;
+    outline: none;
+    color: var(--text);
+    background: white;
+    transition: border .2s, box-shadow .2s;
+}
+
+.field input:focus,
+.field textarea:focus,
+.search:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(22,134,91,.08);
+}
+
+.field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* PHOTO UPLOAD */
+
+.upload {
+    border: 1.5px dashed #ccc;
+    border-radius: 10px;
+    padding: 26px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    color: var(--muted);
+    transition: .2s;
+}
+
+.upload:hover {
+    background: #fafdfa;
+    border-color: var(--green);
+}
+
+.upload input {
+    display: none;
+}
+
+.upload strong {
+    display: block;
+    font-size: 13px;
+    color: #555;
+    margin: 7px 0;
+}
+
+.upload small {
+    font-size: 11px;
+}
+
+#preview {
+    display: none;
+    max-width: 100%;
+    max-height: 230px;
+    margin: 15px auto 0;
+    border-radius: 9px;
+}
+
+/* STAR RATING */
+
+.rating {
+    display: flex;
+    gap: 8px;
+}
+
+.rating button {
+    border: none;
+    background: none;
+    color: #ddd;
+    font-size: 29px;
+    cursor: pointer;
+    transition: .15s;
+}
+
+.rating button.active {
+    color: #dfa72e;
+    transform: scale(1.12);
+}
+
+/* PUBLISH BUTTON */
+
+.publish {
+    width: 100%;
+    border: none;
+    border-radius: 9px;
+    background: var(--green);
+    color: white;
+    padding: 13px;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.publish:hover {
+    background: #106d49;
+}
+
+.publish:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.empty {
+    padding: 45px 15px;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.status {
+    font-size: 12px;
+    color: var(--green);
+    margin-top: 12px;
+}
+
+footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    padding: 35px 10px;
+}
+
+/* FOOTER */
+
+.site-footer {
+    max-width: 900px;
+    margin: 65px auto 0;
+    padding: 35px 30px 22px;
+    border-top: 1px solid var(--border);
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.footer-brand {
+    font-size: 19px;
+    font-weight: 750;
+    letter-spacing: -1px;
+}
+
+.footer-brand span {
+    color: var(--green);
+}
+
+.footer-description {
+    margin-top: 9px;
+    max-width: 260px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    align-items: center;
+}
+
+.footer-links a {
+    color: #666;
+    font-size: 12px;
+    text-decoration: none;
+    transition: color .2s;
+}
+
+.footer-links a:hover {
+    color: var(--green);
+}
+
+.footer-details {
+    border-top: 1px solid var(--border);
+    padding-top: 13px;
+}
+
+.footer-details details {
+    border-bottom: 1px solid #eeeeee;
+}
+
+.footer-details summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 3px;
+    color: #444;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.footer-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.footer-details summary::after {
+    content: "+";
+    font-size: 17px;
+    font-weight: 300;
+    color: var(--muted);
+    transition: transform .2s;
+}
+
+.footer-details details[open] summary::after {
+    transform: rotate(45deg);
+}
+
+.footer-details details p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.8;
+    padding: 0 3px 15px;
+    max-width: 650px;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 22px;
+}
+
+.footer-bottom p {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.footer-tag {
+    color: var(--green);
+    background: #eef7f1;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 650;
+}
+
+@media(max-width:600px) {
+    .site-footer {
+        padding: 28px 18px 20px;
+        margin-top: 40px;
+    }
+
+    .footer-top {
+        flex-direction: column;
+    }
+
+    .footer-links {
+        gap: 14px;
+    }
+
+    .footer-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+/* ANIMATIONS */
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* MOBILE RESPONSIVENESS */
+
+@media(max-width:600px) {
+    .rail {
+        width: 16px;
+    }
+
+    .plus-button {
+        left: 4px;
+        width: 49px;
+        height: 49px;
+        border-radius: 15px;
+    }
+
+    .plus-button:hover {
+        left: 7px;
+    }
+
+    .menu-panel {
+        left: 57px;
+        width: 190px;
+    }
+
+    .main {
+        margin-left: 16px;
+    }
+
+    .topbar {
+        padding: 0 20px;
+    }
+
+    .content {
+        margin: 43px auto;
+        padding: 0 17px;
+    }
+
+    .hero h1 {
+        font-size: 36px;
+    }
+
+    .post {
+        padding: 15px;
+    }
+
+    .create-card {
+        padding: 17px;
+    }
+}
+
+@media(prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LEFT RAIL -->
+<div class="rail"></div>
+
+<!-- FLOATING PLUS BUTTON -->
+<button class="plus-button" id="plusButton"
+        aria-label="Open navigation"
+        aria-expanded="false">+</button>
+
+<!-- POP-OUT NAVIGATION -->
+<div class="menu-panel" id="menuPanel">
+
+    <div class="menu-label">MESSBOARD</div>
+
+    <button class="menu-item active" data-page="feed">
+        <span class="symbol">⌂</span> For you
+    </button>
+
+    <button class="menu-item" data-page="explore">
+        <span class="symbol">⌕</span> Explore
+    </button>
+
+    <button class="menu-item" data-page="activity">
+        <span class="symbol">◷</span> My activity
+    </button>
+
+    <div style="height:1px;background:#eee;margin:6px 4px"></div>
+
+    <button class="menu-item" data-page="create">
+        <span class="symbol">＋</span> Create a post
+    </button>
+
+</div>
+
+<!-- MAIN WEBSITE -->
+<div class="main">
+
+    <header class="topbar">
+        <div class="brand">mess<span>board.</span></div>
+        <div class="top-label">CAMPUS FOOD COMMUNITY</div>
+    </header>
+
+    <main class="content">
+
+        <!-- FOR YOU PAGE -->
+        <section class="page active" id="feedPage">
+
+            <div class="hero">
+                <div class="eyebrow">YOUR CAMPUS FOOD COMMUNITY</div>
+
+                <h1>Good food deserves<br>good feedback.</h1>
+
+                <p>
+                    Discover what's being served.
+                    Share your experience.
+                    Make your mess better.
+                </p>
+            </div>
+
+            <div class="feed-heading">
+                <h2>Latest reviews</h2>
+                <span>Community feed</span>
+            </div>
+
+            <div id="feed">
+                <div class="empty">Loading reviews...</div>
+            </div>
+
+        </section>
+
+        <!-- CREATE POST PAGE -->
+        <section class="page" id="createPage">
+
+            <h1 class="page-title">Share your meal.</h1>
+
+            <p class="page-subtitle">
+                Give your campus an honest review.
+            </p>
+
+            <form class="create-card" id="postForm">
+
+                <div class="field">
+                    <label>Mess name</label>
+                    <input id="mess" required maxlength="100"
+                           placeholder="e.g. North Campus Mess">
+                </div>
+
+                <div class="field">
+                    <label>Food name</label>
+                    <input id="food" required maxlength="100"
+                           placeholder="e.g. Paneer Thali">
+                </div>
+
+                <div class="field">
+                    <label>Meal photograph</label>
+
+                    <label class="upload" for="photo">
+                        <span style="font-size:23px">＋</span>
+
+                        <strong>Upload your meal photo</strong>
+
+                        <small>JPG, PNG or WebP. Maximum 5 MB.</small>
+
+                        <input type="file" id="photo"
+                               accept="image/jpeg,image/png,image/webp"
+                               >
+
+                        <img id="preview" alt="Meal preview">
+                    </label>
+                </div>
+
+                <div class="field">
+                    <label>Your rating</label>
+
+                    <div class="rating" id="stars">
+                        <button type="button" data-value="1">★</button>
+                        <button type="button" data-value="2">★</button>
+                        <button type="button" data-value="3">★</button>
+                        <button type="button" data-value="4">★</button>
+                        <button type="button" data-value="5">★</button>
+                    </div>
+
+                    <small id="ratingLabel" style="color:#888">
+                        Select a rating
+                    </small>
+                </div>
+
+                <div class="field">
+                    <label>Your thoughts</label>
+
+                    <textarea id="comment" required maxlength="1000"
+                        placeholder="How was the food today?"></textarea>
+                </div>
+
+                <button class="publish" id="submitBtn" type="submit">
+                    Publish review
+                </button>
+
+                <p class="status" id="status"></p>
+
+            </form>
+
+        </section>
+
+        <!-- EXPLORE PAGE -->
+        <section class="page" id="explorePage">
+
+            <h1 class="page-title">Explore.</h1>
+
+            <p class="page-subtitle">
+                Find meals and reviews across campus.
+            </p>
+
+            <input class="search" id="searchInput"
+                   placeholder="Search food or mess...">
+
+            <div id="exploreFeed" style="margin-top:20px"></div>
+
+        </section>
+
+        <!-- ACTIVITY PAGE -->
+        <section class="page" id="activityPage">
+
+            <h1 class="page-title">Your activity.</h1>
+
+            <p class="page-subtitle">
+                Posts and votes from this browser.
+            </p>
+
+            <div id="activityFeed"></div>
+
+        </section>
+
+    </main>
+
+    
+    <footer class="site-footer">
+
+        <div class="footer-top">
+
+            <div>
+                <div class="footer-brand">
+                    mess<span>board.</span>
+                </div>
+
+                <p class="footer-description">
+                    A student-powered platform for honest food
+                    feedback and better campus dining.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <a href="#feedPage">For you</a>
+                <a href="#createPage"
+                onclick="navigate('create'); return false;">
+                    Share a review
+                </a>
+                <a href="#explorePage"
+                onclick="navigate('explore'); return false;">
+                    Explore
+                </a>
+            </div>
+
+        </div>
+
+
+        <div class="footer-details">
+
+            <details>
+                <summary>About Messboard</summary>
+                <p>
+                    Messboard is a student-focused campus food
+                    feedback platform. Students can share meal
+                    photographs, rate food, leave comments and
+                    vote on other students' experiences.
+                    Our goal is to make campus dining feedback
+                    more visible and accessible.
+                </p>
+            </details>
+
+
+            <details>
+                <summary>Privacy Policy</summary>
+                <p>
+                    Messboard is a hackathon prototype.
+                    Reviews, ratings and uploaded photographs
+                    may be stored in the project's database.
+                    A browser-generated identifier is used to
+                    associate votes with a browser.
+                    Do not upload sensitive personal information
+                    or photographs containing private details.
+                    This prototype does not promise anonymity
+                    or production-grade data security.
+                </p>
+            </details>
+
+
+            <details>
+                <summary>Terms of Use</summary>
+                <p>
+                    Users should submit genuine, respectful
+                    feedback about their dining experiences.
+                    Do not upload illegal, abusive, misleading
+                    or inappropriate content.
+                    The platform is intended for campus feedback
+                    and demonstration purposes.
+                </p>
+            </details>
+
+
+            <details>
+                <summary>Hackathon Project</summary>
+                <p>
+                    Messboard is an educational project developed
+                    as part of a student hackathon.
+                    It demonstrates frontend development,
+                    Java Spring Boot backend integration,
+                    PostgreSQL database management and
+                    community-based feedback functionality.
+                    It is a prototype and is not officially
+                    affiliated with any college, hostel or mess
+                    administration unless explicitly stated.
+                </p>
+            </details>
+
+
+            <details>
+                <summary>Contact & Feedback</summary>
+                <p>
+                    Have suggestions or found an issue?
+                    Contact the Messboard development team
+                    through the contact information provided
+                    by the project creators.
+                </p>
+            </details>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <p>
+                © 2026 Messboard. Built by students, for students.
+            </p>
+
+            <span class="footer-tag">
+                STUDENT HACKATHON PROJECT
+            </span>
+
+        </div>
+
+    </footer>
+
+
+</div>
+
+<!-- PART 2: JAVASCRIPT GOES HERE -->
+
+<script>
+
+// ==========================================
+// MESSBOARD CONFIGURATION
+// ==========================================
+
+const BACKEND = "http://localhost:8080";
+const API = BACKEND + "/api";
+
+const plusButton = document.getElementById("plusButton");
+const menuPanel = document.getElementById("menuPanel");
+
+let currentPage = "feed";
+let selectedRating = 0;
+let selectedFile = null;
+let allPosts = [];
+
+// Unique browser voter ID
+let voterId = localStorage.getItem("messboard-voter-id");
+
+if (!voterId) {
+    voterId = crypto.randomUUID();
+    localStorage.setItem("messboard-voter-id", voterId);
+}
+
+
+// ==========================================
+// NAVIGATION MENU
+// ==========================================
+
+function toggleMenu(force) {
+
+    const open = typeof force === "boolean"
+        ? force
+        : !menuPanel.classList.contains("visible");
+
+    menuPanel.classList.toggle("visible", open);
+    plusButton.classList.toggle("open", open);
+
+    plusButton.setAttribute(
+        "aria-expanded",
+        String(open)
+    );
+}
+
+plusButton.addEventListener("click", () => {
+    toggleMenu();
+});
+
+// Close menu when clicking outside
+
+document.addEventListener("click", event => {
+
+    if (
+        !menuPanel.contains(event.target) &&
+        !plusButton.contains(event.target)
+    ) {
+        toggleMenu(false);
+    }
+
+});
+
+// Close menu using Escape
+
+document.addEventListener("keydown", event => {
+
+    if (event.key === "Escape") {
+        toggleMenu(false);
+    }
+
+});
+
+
+// ==========================================
+// PAGE NAVIGATION
+// ==========================================
+
+function navigate(page) {
+
+    currentPage = page;
+
+    document.querySelectorAll(".page").forEach(section => {
+        section.classList.remove("active");
+    });
+
+    const selectedPage = document.getElementById(page + "Page");
+
+    if (!selectedPage) return;
+
+    selectedPage.classList.add("active");
+
+    document.querySelectorAll(".menu-item").forEach(item => {
+
+        item.classList.toggle(
+            "active",
+            item.dataset.page === page
+        );
+
+    });
+
+    const titles = {
+        feed: "For you",
+        create: "Create a post",
+        explore: "Explore",
+        activity: "My activity"
+    };
+
+    document.title = titles[page] + " | Messboard";
+
+    toggleMenu(false);
+
+    if (page === "activity") {
+        renderActivity();
+    }
+
+    if (page === "explore") {
+        renderExplore();
+    }
+
+}
+
+// Connect navigation buttons
+
+document.querySelectorAll(".menu-item").forEach(item => {
+
+    item.addEventListener("click", () => {
+        navigate(item.dataset.page);
+    });
+
+});
+
+
+// ==========================================
+// IMAGE UPLOAD AND PREVIEW
+// ==========================================
+
+const photoInput = document.getElementById("photo");
+const preview = document.getElementById("preview");
+
+photoInput.addEventListener("change", () => {
+
+    const file = photoInput.files[0];
+
+    if (!file) return;
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+
+        alert("Please upload JPG, PNG or WebP.");
+
+        photoInput.value = "";
+        selectedFile = null;
+
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+
+        alert("Image must be smaller than 5 MB.");
+
+        photoInput.value = "";
+        selectedFile = null;
+
+        return;
+    }
+
+    selectedFile = file;
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+});
+
+
+// ==========================================
+// STAR RATING SYSTEM
+// ==========================================
+
+document.querySelectorAll("#stars button").forEach(star => {
+
+    star.addEventListener("click", () => {
+
+        selectedRating = Number(star.dataset.value);
+
+        document.querySelectorAll("#stars button").forEach(item => {
+
+            item.classList.toggle(
+                "active",
+                Number(item.dataset.value) <= selectedRating
+            );
+
+        });
+
+        document.getElementById("ratingLabel").textContent =
+            selectedRating + " out of 5";
+
+    });
+
+});
+
+
+// ==========================================
+// CREATE AND PUBLISH A REVIEW
+// ==========================================
+
+document.getElementById("postForm").addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+        if (!selectedRating) {
+            alert("Please select a star rating.");
+            return;
+        }
+
+        if (!selectedFile) {
+            alert("Please upload a meal photograph.");
+            return;
+        }
+
+        const data = new FormData();
+
+        data.append(
+            "messName",
+            document.getElementById("mess").value.trim()
+        );
+
+        data.append(
+            "foodName",
+            document.getElementById("food").value.trim()
+        );
+
+        data.append(
+            "comment",
+            document.getElementById("comment").value.trim()
+        );
+
+        data.append("rating", selectedRating);
+
+        data.append("image", selectedFile);
+
+        const submitButton = document.getElementById("submitBtn");
+        const status = document.getElementById("status");
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Publishing...";
+
+        try {
+
+            const response = await fetch(API + "/posts", {
+
+                method: "POST",
+
+                body: data
+
+            });
+
+            if (!response.ok) {
+                throw new Error("Unable to publish review");
+            }
+
+            // Reset form
+
+            document.getElementById("postForm").reset();
+
+            selectedRating = 0;
+            selectedFile = null;
+
+            preview.style.display = "none";
+            preview.removeAttribute("src");
+
+            document.querySelectorAll("#stars button").forEach(star => {
+                star.classList.remove("active");
+            });
+
+            document.getElementById("ratingLabel").textContent =
+                "Select a rating";
+
+            status.textContent = "Your review has been published!";
+
+            await loadPosts();
+
+            navigate("feed");
+
+        } catch (error) {
+
+            status.textContent =
+                "Unable to publish. Check your backend connection.";
+
+            console.error(error);
+
+        } finally {
+
+            submitButton.disabled = false;
+            submitButton.textContent = "Publish review";
+
+        }
+
+    }
+);
+
+
+// ==========================================
+// GENERATE A REVIEW CARD
+// ==========================================
+
+function createCard(post) {
+
+    const card = document.createElement("article");
+
+    card.className = "post";
+
+    // Header
+
+    const header = document.createElement("div");
+
+    header.className = "post-header";
+
+    const mess = document.createElement("span");
+
+    mess.className = "mess";
+    mess.textContent = post.messName;
+
+    const date = document.createElement("span");
+
+    date.className = "date";
+
+    const parsedDate = new Date(post.createdAt);
+
+    date.textContent = Number.isNaN(parsedDate.getTime())
+        ? ""
+        : parsedDate.toLocaleString();
+
+    header.append(mess, date);
+
+    // Food name
+
+    const food = document.createElement("div");
+
+    food.className = "food-title";
+    food.textContent = post.foodName;
+
+    // Meal photograph
+
+    const img = document.createElement("img");
+
+    img.className = "food-image";
+    img.src = new URL(post.imageUrl, BACKEND).href;
+    img.alt = "Meal: " + post.foodName;
+    img.loading = "lazy";
+
+    img.onerror = () => {
+        img.style.display = "none";
+    };
+
+    // Rating
+
+    const rating = document.createElement("div");
+
+    rating.className = "stars";
+
+    const score = Math.max(0, Math.min(5, Number(post.rating) || 0));
+
+    rating.textContent =
+        "★".repeat(score) +
+        "☆".repeat(5 - score) +
+        "  " + score + "/5";
+
+    // Comment
+
+    const comment = document.createElement("p");
+
+    comment.className = "comment";
+    comment.textContent = post.comment;
+
+    // Voting buttons
+
+    const actions = document.createElement("div");
+
+    actions.className = "actions";
+
+    const up = document.createElement("button");
+
+    up.className = "vote";
+    up.textContent = "👍 " + (post.upvotes || 0);
+
+    const down = document.createElement("button");
+
+    down.className = "vote";
+    down.textContent = "👎 " + (post.downvotes || 0);
+
+    const previousVote = localStorage.getItem("vote-" + post.id);
+
+    if (previousVote === "UP") {
+        up.classList.add("selected");
+    }
+
+    if (previousVote === "DOWN") {
+        down.classList.add("down-selected");
+    }
+
+    up.addEventListener("click", () => {
+        castVote(post.id, "UP");
+    });
+
+    down.addEventListener("click", () => {
+        castVote(post.id, "DOWN");
+    });
+
+    actions.append(up, down);
+
+    // Assemble card
+
+    card.append(
+        header,
+        food,
+        img,
+        rating,
+        comment,
+        actions
+    );
+
+    return card;
+
+}
+
+
+// ==========================================
+// LOAD REVIEWS FROM SPRING BOOT
+// ==========================================
+
+async function loadPosts() {
+
+    const feed = document.getElementById("feed");
+
+    try {
+
+        const response = await fetch(API + "/posts");
+
+        if (!response.ok) {
+            throw new Error("Could not load reviews");
+        }
+
+        allPosts = await response.json();
+
+        feed.replaceChildren();
+
+        if (!allPosts.length) {
+
+            const empty = document.createElement("div");
+
+            empty.className = "empty";
+
+            empty.textContent =
+                "No reviews yet. Be the first to share!";
+
+            feed.appendChild(empty);
+
+        } else {
+
+            allPosts.forEach(post => {
+                feed.appendChild(createCard(post));
+            });
+
+        }
+
+        if (currentPage === "explore") {
+            renderExplore();
+        }
+
+    } catch (error) {
+
+        feed.textContent =
+            "Unable to connect. Please check your backend.";
+
+        console.error(error);
+
+    }
+
+}
+
+
+// ==========================================
+// THUMBS UP / THUMBS DOWN
+// ==========================================
+
+async function castVote(id, value) {
+
+    try {
+
+        const response = await fetch(
+            API + "/posts/" + id + "/vote",
+            {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    voterId: voterId,
+                    value: value
+                })
+
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Vote failed");
+        }
+
+        const result = await response.json();
+
+        localStorage.setItem(
+            "vote-" + id,
+            result.value
+        );
+
+        await loadPosts();
+
+    } catch (error) {
+
+        alert("Unable to submit vote.");
+
+        console.error(error);
+
+    }
+
+}
+
+
+// ==========================================
+// EXPLORE AND SEARCH
+// ==========================================
+
+function renderExplore() {
+
+    const query = document.getElementById("searchInput")
+        .value.trim().toLowerCase();
+
+    const container = document.getElementById("exploreFeed");
+
+    container.replaceChildren();
+
+    const filtered = allPosts.filter(post => {
+
+        const foodName = (post.foodName || "").toLowerCase();
+
+        const messName = (post.messName || "").toLowerCase();
+
+        return foodName.includes(query) ||
+               messName.includes(query);
+
+    });
+
+    if (!filtered.length) {
+
+        const empty = document.createElement("div");
+
+        empty.className = "empty";
+        empty.textContent = "No matching reviews found.";
+
+        container.appendChild(empty);
+
+        return;
+
+    }
+
+    filtered.forEach(post => {
+
+        container.appendChild(createCard(post));
+
+    });
+
+}
+
+document.getElementById("searchInput").addEventListener(
+    "input",
+    renderExplore
+);
+
+
+// ==========================================
+// MY ACTIVITY
+// ==========================================
+
+function renderActivity() {
+
+    const container = document.getElementById("activityFeed");
+
+    container.replaceChildren();
+
+    const voted = allPosts.filter(post => {
+
+        return localStorage.getItem("vote-" + post.id);
+
+    });
+
+    if (!voted.length) {
+
+        const empty = document.createElement("div");
+
+        empty.className = "empty";
+
+        empty.textContent = "Your votes will appear here.";
+
+        container.appendChild(empty);
+
+        return;
+
+    }
+
+    voted.forEach(post => {
+
+        container.appendChild(createCard(post));
+
+    });
+
+}
+
+
+// ==========================================
+// INITIALIZE WEBSITE
+// ==========================================
+
+loadPosts();
+
+</script>
+
+
+</body>
+</html>
